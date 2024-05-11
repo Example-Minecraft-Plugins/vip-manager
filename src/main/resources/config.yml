@@ -1,0 +1,33 @@
+vips:
+  VIP:
+    activation:
+      - "lp user %player% group add vip"
+      - "vip kit %player% vip"
+
+    rewards:
+      - "spawner give %player% ZOMBIE 1"
+
+    deactivation:
+      - "lp user %player% group remove vip"
+
+  MVP:
+    activation:
+      - "lp user %player% group add mvp"
+      - "vip kit %player% mvp"
+
+    rewards:
+      - "spawner give %player% SKELETON 2"
+
+    deactivation:
+      - "lp user %player% group remove mvp"
+
+  PLUNCKY:
+    activation:
+      - "lp user %player% group add pluncky"
+      - "vip kit %player% pluncky"
+
+    rewards:
+      - "spawner give %player% CAVE_SPIDER 3"
+
+    deactivation:
+      - "lp user %player% group remove pluncky"
