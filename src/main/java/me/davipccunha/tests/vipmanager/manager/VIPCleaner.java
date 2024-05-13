@@ -14,7 +14,7 @@ public class VIPCleaner {
     public void removeExpiredVIPs(String playerName) {
         final RedisCache<VIPUser> cache = this.plugin.getVIPUserCache();
 
-        final VIPUser vipUser = cache.get(playerName);
+        final VIPUser vipUser = cache.get(playerName.toLowerCase());
         if (vipUser == null) return;
 
         for (VIPType vipType : vipUser.getVIPs()) {
@@ -24,10 +24,10 @@ public class VIPCleaner {
             }
         }
 
-        cache.add(playerName, vipUser);
+        cache.add(playerName.toLowerCase(), vipUser);
 
         if (!vipUser.hasAnyVIP()) {
-            cache.remove(playerName);
+            cache.remove(playerName.toLowerCase());
             return;
         }
     }

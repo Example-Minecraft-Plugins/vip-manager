@@ -5,7 +5,10 @@ import me.davipccunha.tests.vipmanager.VIPManagerPlugin;
 import me.davipccunha.tests.vipmanager.model.VIPType;
 import me.davipccunha.tests.vipmanager.model.VIPUser;
 import me.davipccunha.tests.vipmanager.utils.VIPUtils;
+import me.davipccunha.utils.messages.ErrorMessages;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,15 +19,22 @@ public class AdicionarSubCommand implements VIPSubCommand {
     private final VIPManagerPlugin plugin;
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean execute(CommandSender sender, String[] args) {
         if (!sender.hasPermission("vipmanager.admin.add")) {
-            sender.sendMessage("§cVocê não tem permissão para executar esse comando.");
+            sender.sendMessage(ErrorMessages.NO_PERMISSION.getMessage());
             return true;
         }
 
         if (args.length < 4) return false;
 
-        final String playerName = args[1];
+        final String playerName = Bukkit.getPlayer(args[1]) != null ? Bukkit.getPlayer(args[1]).getName() : args[1];
+        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+
+        if (offlinePlayer == null || !offlinePlayer.hasPlayedBefore()) {
+            sender.sendMessage(ErrorMessages.PLAYER_NOT_FOUND.getMessage());
+            return true;
+        }
 
         final VIPType vipType = VIPType.getByName(args[2].toUpperCase());
         if (vipType == null) {
@@ -34,18 +44,18 @@ public class AdicionarSubCommand implements VIPSubCommand {
 
         final int days = NumberUtils.toInt(args[3]);
         if (days <= 0) {
-            sender.sendMessage("§cNúmero de dias inválido.");
+            sender.sendMessage(ErrorMessages.INVALID_AMOUNT.getMessage());
             return true;
         }
 
-        final VIPUser temp = this.plugin.getVIPUserCache().get(playerName);
+        final VIPUser temp = this.plugin.getVIPUserCache().get(playerName.toLowerCase());
         final VIPUser vipUser = temp == null ? new VIPUser(playerName) : temp;
 
         vipUser.addTime(vipType, days * 24 * 60 * 60 * 1000L);
 
         VIPUtils.executeCommandsFromConfig(this.plugin.getConfig(), playerName, vipType, "activation");
 
-        this.plugin.getVIPUserCache().add(playerName, vipUser);
+        this.plugin.getVIPUserCache().add(playerName.toLowerCase(), vipUser);
 
         if (Arrays.stream(args).noneMatch(arg -> arg.equalsIgnoreCase("-s")))
             this.announceNewVIP(playerName, vipType.getPrefix());
@@ -56,7 +66,7 @@ public class AdicionarSubCommand implements VIPSubCommand {
                     "",
                     "",
                     String.format(" §d| §fVocê adquiriu %s §fpor %d dias!", vipType.getPrefix(), days),
-                    String.format(" §d| §fObrigado por contribuir com o servidor, §6%s§f!", playerName),
+                    String.format(" §d| §fObrigado por contribuir com o servidor, §6%s§f!", player.getName()),
                     " §d| §fVocê pode recolher seus itens utilizando /correio",
                     "",
                     ""
@@ -76,6 +86,6 @@ public class AdicionarSubCommand implements VIPSubCommand {
 
     @Override
     public String getUsage() {
-        return "§c/vip adicionar <jogador> <vip> <dias>";
+        return "/vip adicionar <jogador> <vip> <dias>";
     }
 }

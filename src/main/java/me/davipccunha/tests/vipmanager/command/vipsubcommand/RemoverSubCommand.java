@@ -5,6 +5,7 @@ import me.davipccunha.tests.vipmanager.VIPManagerPlugin;
 import me.davipccunha.tests.vipmanager.model.VIPType;
 import me.davipccunha.tests.vipmanager.model.VIPUser;
 import me.davipccunha.tests.vipmanager.utils.VIPUtils;
+import me.davipccunha.utils.messages.ErrorMessages;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,7 +17,7 @@ public class RemoverSubCommand implements VIPSubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
         if (!sender.hasPermission("vipmanager.admin.remove")) {
-            sender.sendMessage("§cVocê não tem permissão para executar esse comando.");
+            sender.sendMessage(ErrorMessages.NO_PERMISSION.getMessage());
             return true;
         }
 
@@ -25,7 +26,7 @@ public class RemoverSubCommand implements VIPSubCommand {
         final String playerName = args[1];
         final String vipName = args[2];
 
-        final VIPUser vipUser = this.plugin.getVIPUserCache().get(playerName);
+        final VIPUser vipUser = this.plugin.getVIPUserCache().get(playerName.toLowerCase());
         if (vipUser == null) {
             sender.sendMessage("§cEsse jogador não possui um VIP ativo.");
             return true;
@@ -45,7 +46,7 @@ public class RemoverSubCommand implements VIPSubCommand {
         if (args.length >= 4) {
             final int hours = NumberUtils.toInt(args[3]);
             if (hours <= 0) {
-                sender.sendMessage("§cNúmero de horas inválido.");
+                sender.sendMessage(ErrorMessages.INVALID_AMOUNT.getMessage());
                 return true;
             }
 
@@ -63,9 +64,9 @@ public class RemoverSubCommand implements VIPSubCommand {
         }
 
         if (!vipUser.hasAnyVIP()) {
-            this.plugin.getVIPUserCache().remove(vipUser.getName());
+            this.plugin.getVIPUserCache().remove(vipUser.getName().toLowerCase());
         } else {
-            this.plugin.getVIPUserCache().add(vipUser.getName(), vipUser);
+            this.plugin.getVIPUserCache().add(vipUser.getName().toLowerCase(), vipUser);
         }
 
         return true;
@@ -78,6 +79,6 @@ public class RemoverSubCommand implements VIPSubCommand {
 
     @Override
     public String getUsage() {
-        return "§c/vip remover <jogador> <vip> [horas]";
+        return "/vip remover <jogador> <vip> [horas]";
     }
 }

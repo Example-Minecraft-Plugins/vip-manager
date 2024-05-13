@@ -14,17 +14,14 @@ public class VIPCommand implements CommandExecutor {
     private final Map<String, VIPSubCommand> subCommands = new HashMap<>();
 
     public VIPCommand(VIPManagerPlugin plugin) {
-        this.subCommands.put("adicionar", new AdicionarSubCommand(plugin));
-        this.subCommands.put("remover", new RemoverSubCommand(plugin));
-        this.subCommands.put("kit", new KitSubCommand(plugin));
-        this.subCommands.put("ver", new VerSubCommand(plugin));
+        this.loadSubCommands(plugin);
 
         this.updateUsage();
     }
 
     private void updateUsage() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("§c/vip <");
+        stringBuilder.append("/vip <");
         for (String subCommand : this.subCommands.keySet()) {
             stringBuilder.append(subCommand).append(" | ");
         }
@@ -55,5 +52,12 @@ public class VIPCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    private void loadSubCommands(VIPManagerPlugin plugin) {
+        this.subCommands.put("adicionar", new AdicionarSubCommand(plugin));
+        this.subCommands.put("remover", new RemoverSubCommand(plugin));
+        this.subCommands.put("kit", new KitSubCommand(plugin));
+        this.subCommands.put("ver", new VerSubCommand(plugin));
     }
 }

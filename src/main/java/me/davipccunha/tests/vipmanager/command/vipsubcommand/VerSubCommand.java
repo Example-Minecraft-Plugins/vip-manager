@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.davipccunha.tests.vipmanager.VIPManagerPlugin;
 import me.davipccunha.tests.vipmanager.model.VIPType;
 import me.davipccunha.tests.vipmanager.model.VIPUser;
+import me.davipccunha.utils.messages.ErrorMessages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,20 +25,20 @@ public class VerSubCommand implements VIPSubCommand {
 
         final String playerName = args[1];
 
-        if (!playerName.equals(sender.getName()) && !sender.hasPermission("vipmanager.admin.check")) {
-            sender.sendMessage("§cVocê não tem permissão para executar esse comando.");
+        if (!playerName.equalsIgnoreCase(sender.getName()) && !sender.hasPermission("vipmanager.admin.check")) {
+            sender.sendMessage(ErrorMessages.NO_PERMISSION.getMessage());
             return true;
         }
 
-        final VIPUser vipUser = this.plugin.getVIPUserCache().get(playerName);
+        final VIPUser vipUser = this.plugin.getVIPUserCache().get(playerName.toLowerCase());
         if (vipUser == null) {
-            if (sender.getName().equals(playerName)) {
+            if (sender.getName().equalsIgnoreCase(playerName)) {
                 sender.sendMessage("");
                 sender.sendMessage("§cVocê não possui nenhum VIP ativo.");
                 sender.sendMessage("§eAdquira um VIP em nosso site §floja.pluncky.com");
                 sender.sendMessage("");
             } else {
-                sender.sendMessage("§cEste jogador não possui nenhum VIP ativo.");
+                sender.sendMessage("§cEsse jogador não possui nenhum VIP ativo.");
             }
 
             return true;
@@ -64,11 +65,21 @@ public class VerSubCommand implements VIPSubCommand {
         final long remainingDays = remainingTime / 1000 / 60 / 60 / 24;
         final long remainingHours = remainingTime / 1000 / 60 / 60 % 24;
 
-        return String.format("%d dias e %d horas", remainingDays, remainingHours);
+        StringBuilder sb = new StringBuilder();
+        if (remainingDays > 0) {
+            sb.append(remainingDays).append(" dia");
+            if (remainingDays > 1) sb.append("s");
+            sb.append(" e ");
+        }
+
+        sb.append(remainingHours).append(" hora");
+        if (remainingHours > 1) sb.append("s");
+
+        return sb.toString();
     }
 
     @Override
     public String getUsage() {
-        return "§c/vip ver <jogador>";
+        return "/vip ver <jogador>";
     }
 }

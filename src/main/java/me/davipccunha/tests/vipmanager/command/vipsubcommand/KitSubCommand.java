@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.davipccunha.tests.vipmanager.VIPManagerPlugin;
 import me.davipccunha.tests.vipmanager.model.VIPType;
 import me.davipccunha.tests.vipmanager.utils.VIPUtils;
+import me.davipccunha.utils.messages.ErrorMessages;
 import org.bukkit.command.CommandSender;
 
 @RequiredArgsConstructor
@@ -13,7 +14,7 @@ public class KitSubCommand implements VIPSubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
         if (!sender.hasPermission("vipmanager.admin.kit")) {
-            sender.sendMessage("§cVocê não tem permissão para executar esse comando.");
+            sender.sendMessage(ErrorMessages.NO_PERMISSION.getMessage());
             return true;
         }
 
@@ -36,6 +37,6 @@ public class KitSubCommand implements VIPSubCommand {
 
     @Override
     public String getUsage() {
-        return "§e/vip kit <jogador> <vip>";
+        return "/vip kit <jogador> <vip>";
     }
 }
